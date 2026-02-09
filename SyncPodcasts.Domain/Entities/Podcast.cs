@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SyncPodcast.Domain.Entities
 {
-    public class Poscast
+    public class Podcast
     {
         private readonly List<Episode> _episodes = new();
 
@@ -17,7 +17,7 @@ namespace SyncPodcast.Domain.Entities
         public DateTime LastFetchedAt { get; set; }
         public IReadOnlyCollection<Episode> Episodes => _episodes.AsReadOnly();
 
-        public Poscast(string title, string author, string description,
+        public Podcast(string title, string author, string description,
             Uri feedUrl, Uri? artworkUrl = null)
         {
             ID = Guid.NewGuid();
@@ -47,6 +47,6 @@ namespace SyncPodcast.Domain.Entities
             _episodes.Add(episode);
         }
 
-        private Poscast() { }
+        private Podcast() { }
     }
 }
