@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="SyncPodcast.API/SyncPodcast.API.csproj" />
+    <Project Path="SyncPodcast.Application/SyncPodcast.Application.csproj" />
+    <Project Path="SyncPodcasts.Domain/SyncPodcast.Domain.csproj" />
+    <Project Path="SyncPoscast.Infrastructure/SyncPoscast.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="SyncPodcast.API.Tests/SyncPodcast.API.Tests.csproj" />
+    <Project Path="SyncPodcast.Infrastructure.Tests/SyncPodcast.Infrastructure.Tests.csproj" />
+    <Project Path="SyncPodcasts.Application.Tests/SyncPodcasts.Application.Tests.csproj" />
+    <Project Path="SyncPoscast.Domain.Tests/SyncPodcast.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
