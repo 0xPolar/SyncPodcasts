@@ -8,13 +8,13 @@ namespace SyncPodcast.Domain.Entities
     {
         private readonly List<Episode> _episodes = new();
 
-        public Guid ID { get; set; }
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public string Description { get; set; }
-        public Uri FeedUrl { get; set; }
-        public Uri? ArtworkUrl { get; set; }
-        public DateTime LastFetchedAt { get; set; }
+        public Guid ID { get; private set; }
+        public string Title { get; private set; }
+        public string Author { get; private set; }
+        public string Description { get; private set; }
+        public Uri FeedUrl { get; private set; }
+        public Uri? ArtworkUrl { get; private set; }
+        public DateTime LastFetchedAt { get; private set; }
         public IReadOnlyCollection<Episode> Episodes => _episodes.AsReadOnly();
 
         public Podcast(string title, string author, string description,

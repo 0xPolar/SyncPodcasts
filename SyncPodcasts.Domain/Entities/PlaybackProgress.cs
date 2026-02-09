@@ -6,12 +6,12 @@ namespace SyncPodcast.Domain.Entities
 {
     public class PlaybackProgress
     {
-        public Guid ID { get; set; }
-        public Guid UserID { get; set; }
-        public Guid EpisodeID { get; set; }
-        public TimeSpan Position { get; set;}
-        public bool IsFinished { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public Guid ID { get; private set; }
+        public Guid UserID { get; private set; }
+        public Guid EpisodeID { get; private set; }
+        public TimeSpan Position { get; private set;}
+        public bool IsFinished { get; private set; }
+        public DateTime UpdatedAt { get; private set; }
 
         public PlaybackProgress(Guid userId, Guid episodeId, TimeSpan position, bool isFinished)
         {

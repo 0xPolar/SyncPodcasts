@@ -6,13 +6,13 @@ namespace SyncPodcast.Domain.Entities
 {
     public class Episode
     {
-        public Guid ID { get; set; }
-        public Guid PodcastID { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public Uri AudioUrl { get; set; }
-        public TimeSpan Duration { get; set; }
-        public DateTime PublishedAt { get; set; }
+        public Guid ID { get; private set; }
+        public Guid PodcastID { get; private set; }
+        public string Title { get; private set; }
+        public string Description { get; private set; }
+        public Uri AudioUrl { get; private set; }
+        public TimeSpan Duration { get; private set; }
+        public DateTime PublishedAt { get; private set; }
 
         public Episode(Guid podcastId, string title, string description,
             Uri audioUrl, TimeSpan duration, DateTime publishedAt)
