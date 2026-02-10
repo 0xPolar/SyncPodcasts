@@ -25,12 +25,12 @@ namespace SyncPodcast.Application.CQRS
             {
                 throw new DomainException("Username is already taken.");
             }
-            user = new User(Guid.NewGuid() ,request.Username, request.email, request.Password, DateTime.UtcNow);
+            user = new User(Guid.NewGuid(), request.Username, request.email, request.Password, DateTime.UtcNow);
 
             await _userRepository.AddAsync(user, ct);
             var Token = _tokenService.GenerateToken(user.ID);
 
-            return new AuthUserResultDTO (
+            return new AuthUserResultDTO(
                 user.ID,
                 user.Username,
                 Token.AccessToken,
@@ -45,10 +45,11 @@ namespace SyncPodcast.Application.CQRS
         private readonly IUserRepository _userRepository;
         private readonly ITokenService _tokenService;
         private readonly IHashService _hashService;
-        public LoginUserCommandHandler(IUserRepository userRepository, ITokenService tokenService)
+        public LoginUserCommandHandler(IUserRepository userRepository, ITokenService tokenService, IHashService hashService)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
+            _hashService = hashService;
         }
         public async Task<AuthUserResultDTO> Handle(LoginUserCommand request, CancellationToken ct)
         {
@@ -70,11 +71,11 @@ namespace SyncPodcast.Application.CQRS
     }
     public class SubscribePodcastCommandHandler : IRequestHandler<SubscibePodcastCommand, SubscibeResultDTO>
     {
-        private readonly IPoscastRepository _podcasts;
+        private readonly IPodcastRepository _podcasts;
         private readonly ISubscriptionRepository _subscriptions;
         private readonly IRssParser _rssParser;
 
-        public SubscribePodcastCommandHandler(IPoscastRepository podcasts, ISubscriptionRepository subscriptions, IRssParser rssParser)
+        public SubscribePodcastCommandHandler(IPodcastRepository podcasts, ISubscriptionRepository subscriptions, IRssParser rssParser)
         {
             _podcasts = podcasts;
             _subscriptions = subscriptions;
@@ -106,6 +107,25 @@ namespace SyncPodcast.Application.CQRS
                 podcast.FeedUrl,
                 podcast.ArtworkUrl
             );
+        }
+    }
+
+    public class UnsubscribePodcastCommandHandler : IRequestHandler<UnsubscribePodcastCommand>
+    {
+        private readonly IPodcastRepository _podcasts;
+        private readonly ISubscriptionRepository _subscriptions;
+        public UnsubscribePodcastCommandHandler(IPodcastRepository podcasts, ISubscriptionRepository subscriptions)
+        {
+            _subscriptions = subscriptions;
+            _podcasts = podcasts;
+        }
+        public async Task Handle(UnsubscribePodcastCommand request, CancellationToken ct)
+        {
+            if (!await _subscriptions.ExistsAsync(request.UserId, request.PodcastId, ct))
+            {
+                throw new DomainException("User is not subscribed to this podcast.");
+            }
+            await _subscriptions.DeleteAsync(request.UserId, request.PodcastId, ct);
         }
     }
 }
