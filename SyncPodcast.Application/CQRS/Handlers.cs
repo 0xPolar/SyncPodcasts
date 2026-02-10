@@ -11,9 +11,32 @@ namespace SyncPodcast.Application.CQRS
 
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, AuthUserResultDTO>
     {
-        pricate readonly 
-        public Task<AuthUserResultDTO> Handle(RegisterUserCommand request, CancellationToken ct)
+        private readonly IUserRepository _userRepository;
+        private readonly ITokenService _tokenService;
+
+        public RegisterUserCommandHandler(IUserRepository userRepository)
         {
+            _userRepository = userRepository;
+        }
+        public async Task<AuthUserResultDTO> Handle(RegisterUserCommand request, CancellationToken ct)
+        {
+            User? user = await _userRepository.GetByUsernameAsync(request.Username, ct);
+            if (user != null)
+            {
+                throw new DomainException("Username is already taken.");
+            }
+            user = new User(Guid.NewGuid() ,request.Username, request.email, request.Password, DateTime.UtcNow);
+
+            await _userRepository.AddAsync(user, ct);
+            var Token = _tokenService.GenerateToken(user.ID);
+
+            return new AuthUserResultDTO (
+                user.ID,
+                user.Username,
+                Token.AccessToken,
+                Token.RefreshToken,
+                Token.ExpiresAt
+            );
         }
     }
     public class SubscribePodcastCommandHandler : IRequestHandler<SubscibePodcastCommand, SubscibeResultDTO>
@@ -31,7 +54,7 @@ namespace SyncPodcast.Application.CQRS
 
         public async Task<SubscibeResultDTO> Handle(SubscibePodcastCommand request, CancellationToken ct)
         {
-            var podcast = await _podcasts.GetByFeedUrlAsync(request.FeedURL, ct);
+            Podcast? podcast = await _podcasts.GetByFeedUrlAsync(request.FeedURL, ct);
 
             if (podcast == null)
             {
