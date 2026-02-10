@@ -40,14 +40,7 @@ namespace SyncPodcast.Domain.Interfaces
         Task<List<PodcastSearchResult>> SearchAsync(string query, CancellationToken ct);
     }
 
-    public class PodcastSearchResult
-    {
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public Uri FeedUrl { get; set; }
-        public Uri? ArtworkUrl { get; set; }
-
-    }
+    public record PodcastSearchResult(string Title, string Author, Uri FeedUrl, Uri? ArtworkUrl);
 
     public interface ITokenService
     {
