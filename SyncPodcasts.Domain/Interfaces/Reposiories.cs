@@ -57,6 +57,11 @@ namespace SyncPodcast.Domain.Interfaces
         Guid? ValidateToken(string token);
     }
 
+    public interface IHashService
+    {
+        string Hash(string input);
+    }
+
     public record AuthTokens(string AccessToken, string RefreshToken, DateTime ExpiresAt);
 
 }
