@@ -5,6 +5,13 @@ using System.Text;
 
 namespace SyncPodcast.Domain.Interfaces
 {
+    public interface IUserRepository
+    {
+        Task<User?> GetByUsernameAsync(string username, CancellationToken ct);
+        Task<User?> GetByEmailAsync(string email, CancellationToken ct);
+        Task<User?> GetByIdAsync(Guid userId, CancellationToken ct);
+        Task AddAsync(User user, CancellationToken ct);
+    }
     public interface IPoscastRepository
     {
         Task<Podcast?> GetPodcastByIdAsync(Guid podcastId, CancellationToken ct);
