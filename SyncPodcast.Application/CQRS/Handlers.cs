@@ -39,6 +39,35 @@ namespace SyncPodcast.Application.CQRS
             );
         }
     }
+
+    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, AuthUserResultDTO>
+    {
+        private readonly IUserRepository _userRepository;
+        private readonly ITokenService _tokenService;
+        private readonly IHashService _hashService;
+        public LoginUserCommandHandler(IUserRepository userRepository, ITokenService tokenService)
+        {
+            _userRepository = userRepository;
+            _tokenService = tokenService;
+        }
+        public async Task<AuthUserResultDTO> Handle(LoginUserCommand request, CancellationToken ct)
+        {
+            string hashedPassword = _hashService.Hash(request.Password);
+            User? user = await _userRepository.GetByUsernameAsync(request.Username, ct);
+            if (user == null || user.PasswordHash != hashedPassword)
+            {
+                throw new DomainException("Invalid username or password.");
+            }
+            var Token = _tokenService.GenerateToken(user.ID);
+            return new AuthUserResultDTO(
+                user.ID,
+                user.Username,
+                Token.AccessToken,
+                Token.RefreshToken,
+                Token.ExpiresAt
+            );
+        }
+    }
     public class SubscribePodcastCommandHandler : IRequestHandler<SubscibePodcastCommand, SubscibeResultDTO>
     {
         private readonly IPoscastRepository _podcasts;
