@@ -145,7 +145,8 @@ namespace SyncPodcast.Application.CQRS
 
         public async Task Handle(UpdatePlaybackProgressCommand request, CancellationToken ct)
         {
-            var progress = new PlaybackProgress(request.UserId, request.EpisodeId, request.Progress, false);
+            bool isCompleted = false;
+            var progress = new PlaybackProgress(request.UserId, request.EpisodeId, request.Progress, isCompleted);
             await _playbackProgressRepository.SaveAsync(progress, ct);
         }
     }

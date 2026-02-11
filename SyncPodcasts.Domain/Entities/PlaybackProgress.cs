@@ -10,6 +10,7 @@ namespace SyncPodcast.Domain.Entities
         public Guid UserID { get; private set; }
         public Guid EpisodeID { get; private set; }
         public TimeSpan Position { get; private set;}
+        public TimeSpan EpisodeDuration { get; private set; }
         public bool IsFinished { get; private set; }
         public DateTime UpdatedAt { get; private set; }
 

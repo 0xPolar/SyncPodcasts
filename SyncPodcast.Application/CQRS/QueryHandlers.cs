@@ -111,4 +111,22 @@ namespace SyncPodcast.Application.CQRS
             );
         }
     }
+
+    public class GetPlaybackProgressQueryHandler : IRequestHandler<GetPlaybackProgressQuery, PlaybackProgressDTO>
+    {
+        private readonly IPlaybackProgressRepository _playbackProgressRepository;
+        public GetPlaybackProgressQueryHandler(IPlaybackProgressRepository playbackProgressRepository)
+        {
+            _playbackProgressRepository = playbackProgressRepository;
+        }
+        public async Task<PlaybackProgressDTO> Handle(GetPlaybackProgressQuery request, CancellationToken ct)
+        {
+            PlaybackProgress? progress = await _playbackProgressRepository.GetAsync(request.UserId, request.EpisodeId, ct);
+            if (progress == null)
+            {
+                return new PlaybackProgressDTO(request.EpisodeId, TimeSpan.Zero);
+            }
+            return new PlaybackProgressDTO(progress.EpisodeID, progress.Position);
+        }
+    }
 }
