@@ -73,4 +73,42 @@ namespace SyncPodcast.Application.CQRS
             return resultDTOs;
         }
     }
+
+    public class GetPodcastDetailsQueryHandler : IRequestHandler<GetPodcastDetailsQuery, PodcastDetailsDTO>
+    {
+        private readonly IPodcastRepository _podcastRepository;
+        public GetPodcastDetailsQueryHandler(IPodcastRepository podcastRepository)
+        {
+            _podcastRepository = podcastRepository;
+        }
+        public async Task<PodcastDetailsDTO> Handle(GetPodcastDetailsQuery request, CancellationToken ct)
+        {
+            Podcast? podcast = await _podcastRepository.GetPodcastByIdAsync(request.PodcastId, ct);
+            if (podcast == null)
+            {
+                throw new DomainException($"Podcast with ID {request.PodcastId} not found.");
+            }
+            List<EpisodeDTO> episodeDTOs = new List<EpisodeDTO>();
+            foreach (var episode in podcast.Episodes)
+            {
+                episodeDTOs.Add(new EpisodeDTO
+                (
+                    episode.ID,
+                    episode.Title,
+                    episode.Duration,
+                    episode.PublishedAt,
+                    episode.MediaUrl
+                ));
+            }
+            return new PodcastDetailsDTO
+            (
+                podcast.ID,
+                podcast.Title,
+                podcast.Author,
+                podcast.FeedUrl,
+                podcast.ArtworkUrl,
+                episodeDTOs
+            );
+        }
     }
+}
