@@ -57,7 +57,7 @@ namespace SyncPodcast.Application.CQRS
         }
         public async Task<List<PodcastSearchResultDTO>> Handle(SearchPodcastQuery request, CancellationToken ct)
         {
-            var results = await _podcastSearchService.SearchAsync(request.Query, ct);
+            var results = await _podcastSearchService.SearchAsync(request.Query, request.Page, request.PageSize, ct);
             List<PodcastSearchResultDTO> resultDTOs = new List<PodcastSearchResultDTO>();
             foreach (var result in results)
             {

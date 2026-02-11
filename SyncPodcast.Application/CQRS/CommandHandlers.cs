@@ -13,10 +13,13 @@ namespace SyncPodcast.Application.CQRS
     {
         private readonly IUserRepository _userRepository;
         private readonly ITokenService _tokenService;
+        private readonly IHashService _hashService;
 
-        public RegisterUserCommandHandler(IUserRepository userRepository)
+        public RegisterUserCommandHandler(IUserRepository userRepository, ITokenService tokenService, IHashService hashService)
         {
             _userRepository = userRepository;
+            _tokenService = tokenService;
+            _hashService = hashService;
         }
         public async Task<AuthUserResultDTO> Handle(RegisterUserCommand request, CancellationToken ct)
         {
@@ -25,7 +28,9 @@ namespace SyncPodcast.Application.CQRS
             {
                 throw new DomainException("Username is already taken.");
             }
-            user = new User(Guid.NewGuid(), request.Username, request.email, request.Password, DateTime.UtcNow);
+
+            string hashedPassword = _hashService.Hash(request.Password);
+            user = new User(Guid.NewGuid(), request.Username, request.email, hashedPassword, DateTime.UtcNow);
 
             await _userRepository.AddAsync(user, ct);
             var Token = _tokenService.GenerateToken(user.ID);
@@ -134,19 +139,26 @@ namespace SyncPodcast.Application.CQRS
     {
         private readonly IPlaybackProgressRepository _playbackProgressRepository;
         private readonly IPodcastRepository _podcastRepository;
-        private readonly IUserRepository _userRepository;
 
-        public UpdatePlaybackProgressCommandHandler(IPlaybackProgressRepository playbackProgressRepository, IPodcastRepository podcastRepository, IUserRepository userRepository)
+        public UpdatePlaybackProgressCommandHandler(IPlaybackProgressRepository playbackProgressRepository, IPodcastRepository podcastRepository)
         {
             _playbackProgressRepository = playbackProgressRepository;
-            _userRepository = userRepository;
             _podcastRepository = podcastRepository;
         }
 
         public async Task Handle(UpdatePlaybackProgressCommand request, CancellationToken ct)
         {
-            bool isCompleted = false;
-            var progress = new PlaybackProgress(request.UserId, request.EpisodeId, request.Progress, isCompleted);
+            var episode = await _podcastRepository.GetEpisodeByIdAsync(request.EpisodeId, ct);
+            if (episode == null)
+                throw new DomainException($"Episode with ID {request.EpisodeId} not found.");
+
+            var progress = await _playbackProgressRepository.GetAsync(request.UserId, request.EpisodeId, ct);
+            if (progress == null)
+            {
+                progress = new PlaybackProgress(request.UserId, request.EpisodeId, request.Progress, false);
+            }
+
+            progress.UpdatePosition(request.Progress, episode.Duration);
             await _playbackProgressRepository.SaveAsync(progress, ct);
         }
     }

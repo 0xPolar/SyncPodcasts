@@ -18,6 +18,7 @@ namespace SyncPodcast.Domain.Interfaces
     {
         Task<Podcast?> GetPodcastByIdAsync(Guid podcastId, CancellationToken ct);
         Task<Podcast?> GetByFeedUrlAsync(Uri feedUrl, CancellationToken ct);
+        Task<Episode?> GetEpisodeByIdAsync(Guid episodeId, CancellationToken ct);
         Task AddAsync(Podcast podcast, CancellationToken ct);
         Task UpdateAsync(Podcast podcast, CancellationToken ct);
          Task DeleteAsync(Guid podcastId, CancellationToken ct);
@@ -46,7 +47,7 @@ namespace SyncPodcast.Domain.Interfaces
 
     public interface IPodcastSearchService
     {
-        Task<List<PodcastSearchResult>> SearchAsync(string query, CancellationToken ct);
+        Task<List<PodcastSearchResult>> SearchAsync(string query, int page, int pageSize, CancellationToken ct);
     }
 
     public record PodcastSearchResult(Guid ID, string Title, string Author, Uri FeedUrl, Uri? ArtworkUrl);
