@@ -127,5 +127,27 @@ namespace SyncPodcast.Application.CQRS
             }
             await _subscriptions.DeleteAsync(request.UserId, request.PodcastId, ct);
         }
+
+    }
+
+    public class UpdatePlaybackProgressCommandHandler : IRequestHandler<UpdatePlaybackProgressCommand>
+    {
+        private readonly IPlaybackProgressRepository _playbackProgressRepository;
+        private readonly IPodcastRepository _podcastRepository;
+        private readonly IUserRepository _userRepository;
+
+        public UpdatePlaybackProgressCommandHandler(IPlaybackProgressRepository playbackProgressRepository, IPodcastRepository podcastRepository, IUserRepository userRepository)
+        {
+            _playbackProgressRepository = playbackProgressRepository;
+            _userRepository = userRepository;
+            _podcastRepository = podcastRepository;
+        }
+
+        public async Task Handle(UpdatePlaybackProgressCommand request, CancellationToken ct)
+        {
+            var progress = new PlaybackProgress(request.UserId, request.EpisodeId, request.Progress, false);
+            await _playbackProgressRepository.SaveAsync(progress, ct);
+        }
     }
 }
+
