@@ -49,7 +49,7 @@ namespace SyncPodcast.Domain.Interfaces
         Task<List<PodcastSearchResult>> SearchAsync(string query, CancellationToken ct);
     }
 
-    public record PodcastSearchResult(string Title, string Author, Uri FeedUrl, Uri? ArtworkUrl);
+    public record PodcastSearchResult(Guid ID, string Title, string Author, Uri FeedUrl, Uri? ArtworkUrl);
 
     public interface ITokenService
     {

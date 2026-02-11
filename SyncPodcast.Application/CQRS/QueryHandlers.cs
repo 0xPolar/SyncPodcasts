@@ -47,4 +47,30 @@ namespace SyncPodcast.Application.CQRS
             return libraryDTOs;
         }
     }
-}
+
+    public class SearchPodcastQueryHandler : IRequestHandler<SearchPodcastQuery, List<PodcastSearchResultDTO>>
+    {
+        private readonly IPodcastSearchService _podcastSearchService;
+        public SearchPodcastQueryHandler(IPodcastSearchService podcastSearchService)
+        {
+            _podcastSearchService = podcastSearchService;
+        }
+        public async Task<List<PodcastSearchResultDTO>> Handle(SearchPodcastQuery request, CancellationToken ct)
+        {
+            var results = await _podcastSearchService.SearchAsync(request.Query, ct);
+            List<PodcastSearchResultDTO> resultDTOs = new List<PodcastSearchResultDTO>();
+            foreach (var result in results)
+            {
+                resultDTOs.Add(new PodcastSearchResultDTO
+                (
+                    result.ID,
+                    result.Title,
+                    result.Author,
+                    result.FeedUrl,
+                    result.ArtworkUrl
+                ));
+            }
+            return resultDTOs;
+        }
+    }
+    }
