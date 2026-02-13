@@ -11,7 +11,7 @@ namespace SyncPodcast.Domain.Interfaces
         Task<User?> GetByEmailAsync(string email, CancellationToken ct);
         Task<User?> GetByIdAsync(Guid userId, CancellationToken ct);
         Task AddAsync(User user, CancellationToken ct);
-        Task<User?> UpdateUser(User user, CancellationToken ct);
+        Task<User?> UpdateUserAsync(User user, CancellationToken ct);
          Task DeleteAsync(Guid userId, CancellationToken ct);
     }
     public interface IPodcastRepository
