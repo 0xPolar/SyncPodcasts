@@ -12,6 +12,7 @@ public class  UserConfiguation : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasKey(u => u.ID);
+
         builder.Property(u => u.Username).IsRequired().HasMaxLength(26);
         builder.Property(u => u.Email).IsRequired().HasMaxLength(100);
         builder.Property(u => u.PasswordHash).IsRequired();
