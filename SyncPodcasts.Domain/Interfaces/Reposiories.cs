@@ -61,6 +61,7 @@ namespace SyncPodcast.Domain.Interfaces
     public interface IHashService
     {
         string Hash(string input);
+        bool Verify(string input, string hashed);
     }
 
     public record AuthTokens(string AccessToken, string RefreshToken, DateTime ExpiresAt);

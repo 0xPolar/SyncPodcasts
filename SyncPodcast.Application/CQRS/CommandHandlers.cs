@@ -58,9 +58,8 @@ namespace SyncPodcast.Application.CQRS
         }
         public async Task<AuthUserResultDTO> Handle(LoginUserCommand request, CancellationToken ct)
         {
-            string hashedPassword = _hashService.Hash(request.Password);
             User? user = await _userRepository.GetByUsernameAsync(request.Username, ct);
-            if (user == null || user.PasswordHash != hashedPassword)
+            if (user == null || !_hashService.Verify(request.Password, user.PasswordHash) )
             {
                 throw new DomainException("Invalid username or password.");
             }
