@@ -39,7 +39,7 @@ public class SubscriptionRepository : ISubscriptionRepository
         await _db.SaveChangesAsync(ct);
     }
 
-    public async Task RemoveAsync(Guid userId, Guid podcastId, CancellationToken ct)
+    public async Task DeleteAsync(Guid userId, Guid podcastId, CancellationToken ct)
         {
             var subscription = await _db.Subscriptions
                 .FirstOrDefaultAsync(s => s.UserID == userId && s.PodcastID == podcastId, ct);
