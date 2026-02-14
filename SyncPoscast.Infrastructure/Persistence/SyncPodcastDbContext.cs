@@ -12,7 +12,7 @@ namespace SyncPoscast.Infrastructure.Persistence
         public DbSet<Podcast> Podcasts => Set<Podcast>();
         public DbSet<Episode> Episodes => Set<Episode>();
         public DbSet<Subscription> Subscriptions => Set<Subscription>();
-        public DbSet<PlaybackProgress> playbackProgresses => Set<PlaybackProgress>();
+        public DbSet<PlaybackProgress> PlaybackProgresses => Set<PlaybackProgress>();
 
         public SyncPodcastDbContext(DbContextOptions<SyncPodcastDbContext> options) : base(options) { } }
 
