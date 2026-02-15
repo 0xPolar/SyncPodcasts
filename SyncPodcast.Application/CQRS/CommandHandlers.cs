@@ -35,6 +35,9 @@ namespace SyncPodcast.Application.CQRS
             await _userRepository.AddAsync(user, ct);
             var Token = _tokenService.GenerateToken(user.ID);
 
+            user.SetRefreshToken(Token.RefreshToken, Token.RefreshTokenExpiresAt);
+            await _userRepository.UpdateUserAsync(user, ct);
+
             return new AuthUserResultDTO(
                 user.ID,
                 user.Username,
@@ -64,6 +67,10 @@ namespace SyncPodcast.Application.CQRS
                 throw new DomainException("Invalid username or password.");
             }
             var Token = _tokenService.GenerateToken(user.ID);
+
+            user.SetRefreshToken(Token.RefreshToken, Token.RefreshTokenExpiresAt);
+            await _userRepository.UpdateUserAsync(user, ct);
+
             return new AuthUserResultDTO(
                 user.ID,
                 user.Username,

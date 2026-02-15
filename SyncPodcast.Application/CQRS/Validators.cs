@@ -24,7 +24,22 @@ namespace SyncPodcast.Application.CQRS
             RuleFor(x => x.Password).NotEmpty().WithMessage("Password is required.");
         }
     }
+    public class RefreshTokenCommandValidator : AbstractValidator<RefreshTokenCommand>
+    {
+        public RefreshTokenCommandValidator()
+        {
+            RuleFor(x => x.AccessToken).NotEmpty().WithMessage("Access token is required.");
+            RuleFor(x => x.RefreshToken).NotEmpty().WithMessage("Refresh token is required.");
+        }
+    }
 
+    public class RevokeTokenCommandValidator : AbstractValidator<RevokeTokenCommand>
+    {
+        public RevokeTokenCommandValidator()
+        {
+            RuleFor(x => x.UserID).NotEmpty().WithMessage("User ID is required.");
+        }
+    }
     public class SubscibePodcastCommandValidator : AbstractValidator<SubscibePodcastCommand>
     {
         public SubscibePodcastCommandValidator()

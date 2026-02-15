@@ -11,6 +11,8 @@ namespace SyncPodcast.Domain.Entities
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
         public DateTime CreatedAt { get; private set; }
+        public string? RefreshToken { get; private set; }
+        public DateTime? RefreshTokenExpiry { get; private set; }
 
         public User(Guid id, string username, string email, string passwordHash, DateTime createdAt)
         {
@@ -20,6 +22,25 @@ namespace SyncPodcast.Domain.Entities
             PasswordHash = passwordHash;
             CreatedAt = createdAt;
         }
+
+        public void ValidateRefreshToken(string refreshToken)
+        {
+            if (RefreshToken != refreshToken || RefreshTokenExpiry <= DateTime.UtcNow)
+                throw new UnauthorizedAccessException("Invalid or expired refresh token.");
+        }
+
+        public void SetRefreshToken(string refreshToken, DateTime expiry)
+        {
+            RefreshToken = refreshToken;
+            RefreshTokenExpiry = expiry;
+        }
+
+        public void ClearRefreshToken()
+        {
+            RefreshToken = null;
+            RefreshTokenExpiry = null;
+        }
+
         private User() { }
     }
 }

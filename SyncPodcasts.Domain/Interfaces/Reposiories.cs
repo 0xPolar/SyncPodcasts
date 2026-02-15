@@ -37,12 +37,12 @@ namespace SyncPodcast.Domain.Interfaces
         Task<PlaybackProgress?> GetAsync(Guid userId, Guid episodeId, CancellationToken ct);
         Task<Dictionary<Guid, PlaybackProgress>> GetByUserIdAsync(Guid userId, CancellationToken ct);
         Task SaveAsync(PlaybackProgress progress, CancellationToken ct);
-         Task DeleteAsync(Guid userId, Guid episodeId, CancellationToken ct);
+        Task DeleteAsync(Guid userId, Guid episodeId, CancellationToken ct);
     }
 
     public interface IRssParser
     {
-               Task<Podcast> ParseAsync(Uri feedUrl, CancellationToken ct);
+       Task<Podcast> ParseAsync(Uri feedUrl, CancellationToken ct);
     }
 
     public interface IPodcastSearchService
@@ -54,8 +54,10 @@ namespace SyncPodcast.Domain.Interfaces
 
     public interface ITokenService
     {
-        AuthTokens GenerateToken(Guid userId);
+        AuthToken GenerateToken(Guid userId);
         Guid? ValidateToken(string token);
+
+        (Guid, AuthToken)? RefreshToken(string expiredToken);
     }
 
     public interface IHashService
@@ -64,6 +66,10 @@ namespace SyncPodcast.Domain.Interfaces
         bool Verify(string input, string hashed);
     }
 
-    public record AuthTokens(string AccessToken, string RefreshToken, DateTime ExpiresAt);
+    public record AuthToken(
+        string AccessToken,
+        string RefreshToken,
+        DateTime ExpiresAt,
+        DateTime RefreshTokenExpiresAt);
 
 }

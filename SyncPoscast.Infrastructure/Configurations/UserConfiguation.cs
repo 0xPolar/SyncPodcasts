@@ -17,6 +17,9 @@ public class  UserConfiguation : IEntityTypeConfiguration<User>
         builder.Property(u => u.Email).IsRequired().HasMaxLength(100);
         builder.Property(u => u.PasswordHash).IsRequired();
         builder.Property(u => u.CreatedAt).IsRequired();
+
+        builder.Property(u => u.RefreshToken).HasMaxLength(128);
+        builder.Property(u => u.RefreshTokenExpiry);
     }
     
 }

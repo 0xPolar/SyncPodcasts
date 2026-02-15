@@ -8,7 +8,7 @@ namespace SyncPoscast.Infrastructure.Authentication;
 public class HashService : IHashService
 {
     public string Hash(string password)
-    {
+   {
         // Implement a secure hashing algorithm, e.g., BCrypt or Argon2
         return BCrypt.Net.BCrypt.HashPassword(password);
     }
