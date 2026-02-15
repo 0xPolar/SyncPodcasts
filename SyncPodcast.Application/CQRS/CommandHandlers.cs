@@ -112,6 +112,28 @@ namespace SyncPodcast.Application.CQRS
             );
         }
     }
+
+    public class  RevokeTokenCommandHandler : IRequestHandler<RevokeTokenCommand>
+    {
+        private readonly IUserRepository _userRepository;
+        private readonly ITokenService _tokenSerivce;
+
+        public RevokeTokenCommandHandler(IUserRepository userRepository, ITokenService tokenSerivce)
+        {
+            _userRepository = userRepository;
+            _tokenSerivce = tokenSerivce;
+        }
+
+        public async Task Handle(RevokeTokenCommand request, CancellationToken ct) 
+        {
+            User? user = await _userRepository.GetByIdAsync(request.UserID, ct)
+                ?? throw new NotFoundException("User", request.UserID);
+
+            user.ClearRefreshToken();
+            await _userRepository.UpdateUserAsync(user, ct);
+        }
+        
+    }
     public class SubscribePodcastCommandHandler : IRequestHandler<SubscibePodcastCommand, SubscibeResultDTO>
     {
         private readonly IPodcastRepository _podcasts;
