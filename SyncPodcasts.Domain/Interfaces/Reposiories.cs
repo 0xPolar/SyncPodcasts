@@ -57,7 +57,7 @@ namespace SyncPodcast.Domain.Interfaces
         AuthToken GenerateToken(Guid userId);
         Guid? ValidateToken(string token);
 
-        (Guid, AuthToken)? RefreshToken(string expiredToken);
+        (Guid userID, AuthToken token)? RefreshToken(string expiredToken);
     }
 
     public interface IHashService

@@ -80,6 +80,38 @@ namespace SyncPodcast.Application.CQRS
             );
         }
     }
+
+    public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthUserResultDTO>
+    {
+        private readonly IUserRepository _userRepository;
+        private readonly ITokenService _tokenService;
+        public RefreshTokenCommandHandler(IUserRepository userRepository, ITokenService tokenService)
+        {
+            _userRepository = userRepository;
+            _tokenService = tokenService;
+        }
+        public async Task<AuthUserResultDTO> Handle(RefreshTokenCommand request, CancellationToken ct)
+        {
+            var result = _tokenService.RefreshToken(request.AccessToken)
+                ?? throw new DomainException("Invalid access token.");
+
+            var user = await _userRepository.GetByIdAsync(result.userID, ct)
+                ?? throw new NotFoundException("User", result.userID);
+
+            user.ValidateRefreshToken(request.RefreshToken);
+
+            user.SetRefreshToken(result.token.RefreshToken, result.token.RefreshTokenExpiresAt);
+            await _userRepository.UpdateUserAsync(user, ct);
+
+            return new AuthUserResultDTO(
+                user.ID,
+                user.Username,
+                result.token.AccessToken,
+                result.token.RefreshToken,
+                result.token.ExpiresAt
+            );
+        }
+    }
     public class SubscribePodcastCommandHandler : IRequestHandler<SubscibePodcastCommand, SubscibeResultDTO>
     {
         private readonly IPodcastRepository _podcasts;
