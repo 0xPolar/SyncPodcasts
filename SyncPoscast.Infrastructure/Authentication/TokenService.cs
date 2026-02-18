@@ -103,6 +103,7 @@ public class TokenSerive : ITokenService
             }, out _);
 
             Guid? userId = ExtractUserID(principal);
+            if (userId == null) return null;
 
             var newToken = GenerateToken(userId.Value);
 

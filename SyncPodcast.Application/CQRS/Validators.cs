@@ -40,6 +40,16 @@ namespace SyncPodcast.Application.CQRS
             RuleFor(x => x.UserID).NotEmpty().WithMessage("User ID is required.");
         }
     }
+
+    public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCommand>
+    {
+        public ChangePasswordCommandValidator()
+        {
+            RuleFor(x => x.UserId).NotEmpty().WithMessage("User ID is required.");
+            RuleFor(x => x.CurrentPassword).NotEmpty().WithMessage("Current password is required.");
+            RuleFor(x => x.NewPassword).NotEmpty().MinimumLength(6).WithMessage("New password must be at least 6 characters long.");
+        }
+    }
     public class SubscibePodcastCommandValidator : AbstractValidator<SubscibePodcastCommand>
     {
         public SubscibePodcastCommandValidator()

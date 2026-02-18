@@ -116,12 +116,10 @@ namespace SyncPodcast.Application.CQRS
     public class  RevokeTokenCommandHandler : IRequestHandler<RevokeTokenCommand>
     {
         private readonly IUserRepository _userRepository;
-        private readonly ITokenService _tokenSerivce;
 
-        public RevokeTokenCommandHandler(IUserRepository userRepository, ITokenService tokenSerivce)
+        public RevokeTokenCommandHandler(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _tokenSerivce = tokenSerivce;
         }
 
         public async Task Handle(RevokeTokenCommand request, CancellationToken ct) 
@@ -133,6 +131,29 @@ namespace SyncPodcast.Application.CQRS
             await _userRepository.UpdateUserAsync(user, ct);
         }
         
+    }
+
+    public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand>
+    {
+        private readonly IUserRepository _userRepository;
+        private readonly IHashService _hashService;
+        public ChangePasswordCommandHandler(IUserRepository userRepository, IHashService hashService)
+        {
+            _userRepository = userRepository;
+            _hashService = hashService;
+        }
+        public async Task Handle(ChangePasswordCommand request, CancellationToken ct)
+        {
+            User? user = await _userRepository.GetByIdAsync(request.UserId, ct)
+                ?? throw new NotFoundException("User", request.UserId);
+            if (!_hashService.Verify(request.CurrentPassword, user.PasswordHash))
+            {
+                throw new DomainException("Current password is incorrect.");
+            }
+            string newHashedPassword = _hashService.Hash(request.NewPassword);
+            user.ChangePassword(newHashedPassword);
+            await _userRepository.UpdateUserAsync(user, ct);
+        }
     }
     public class SubscribePodcastCommandHandler : IRequestHandler<SubscibePodcastCommand, SubscibeResultDTO>
     {

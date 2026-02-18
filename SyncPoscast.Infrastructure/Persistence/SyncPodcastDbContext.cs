@@ -14,7 +14,7 @@ namespace SyncPoscast.Infrastructure.Persistence
         public DbSet<Subscription> Subscriptions => Set<Subscription>();
         public DbSet<PlaybackProgress> PlaybackProgresses => Set<PlaybackProgress>();
 
-        public SyncPodcastDbContext(DbContextOptions<SyncPodcastDbContext> options) : base(options) { } }
+        public SyncPodcastDbContext(DbContextOptions<SyncPodcastDbContext> options) : base(options) { } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

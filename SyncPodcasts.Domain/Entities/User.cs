@@ -25,8 +25,11 @@ namespace SyncPodcast.Domain.Entities
 
         public void ValidateRefreshToken(string refreshToken)
         {
-            if (RefreshToken != refreshToken || RefreshTokenExpiry <= DateTime.UtcNow)
-                throw new UnauthorizedAccessException("Invalid or expired refresh token.");
+            if (RefreshToken != refreshToken)
+                throw new Exceptions.DomainException("Invalid refresh token.");
+
+            if (RefreshTokenExpiry == null || RefreshTokenExpiry <= DateTime.UtcNow)
+                throw new Exceptions.DomainException("Refresh token has expired.");
         }
 
         public void SetRefreshToken(string refreshToken, DateTime expiry)
@@ -39,6 +42,12 @@ namespace SyncPodcast.Domain.Entities
         {
             RefreshToken = null;
             RefreshTokenExpiry = null;
+        }
+
+        public void ChangePassword(string newPasswordHash)
+        {
+            PasswordHash = newPasswordHash;
+            ClearRefreshToken();
         }
 
         private User() { }

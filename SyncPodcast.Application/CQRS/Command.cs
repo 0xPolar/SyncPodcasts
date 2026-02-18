@@ -13,6 +13,8 @@ namespace SyncPodcast.Application.CQRS
     public record RefreshTokenCommand(string AccessToken, string RefreshToken) : IRequest<AuthUserResultDTO>;
     public record RevokeTokenCommand(Guid UserID) : IRequest;
 
+    public record ChangePasswordCommand(Guid UserId, string CurrentPassword, string NewPassword) : IRequest;
+
     // Podcast Commands
     public record SubscibePodcastCommand(Guid UserId, Uri FeedURL) : IRequest<SubscibeResultDTO>;
     public record UnsubscribePodcastCommand(Guid UserId, Guid PodcastId) : IRequest;
