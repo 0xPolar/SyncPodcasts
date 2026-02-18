@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SyncPodcasts.Domain\SyncPodcast.Domain.csproj" />
+    <ProjectReference Include="..\SyncPodcast.Domain\SyncPodcast.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

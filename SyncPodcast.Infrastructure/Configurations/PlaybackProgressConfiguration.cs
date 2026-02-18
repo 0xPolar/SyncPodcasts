@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SyncPoscast.Infrastructure.Configurations;
+namespace SyncPodcast.Infrastructure.Configurations;
 
-public class PlaybackProgresConfiguration : IEntityTypeConfiguration<PlaybackProgress>
+public class PlaybackProgressConfiguration : IEntityTypeConfiguration<PlaybackProgress>
 {
     public void Configure(EntityTypeBuilder<PlaybackProgress> builder)
     {

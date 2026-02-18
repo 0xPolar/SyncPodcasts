@@ -8,14 +8,14 @@ using Microsoft.Extensions.Options;
 
 using SyncPodcast.Domain.Interfaces;
 
-namespace SyncPoscast.Infrastructure.Authentication;
+namespace SyncPodcast.Infrastructure.Authentication;
 
-public class TokenSerive : ITokenService
+public class TokenService : ITokenService
 {
     private readonly JWTSettings _jwtSettings;
 
 
-    public TokenSerive(JWTSettings jwtSettings)
+    public TokenService(JWTSettings jwtSettings)
     {
         _jwtSettings = jwtSettings;
     }

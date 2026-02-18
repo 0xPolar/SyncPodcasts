@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SyncPoscast.Infrastructure.Configurations;
+namespace SyncPodcast.Infrastructure.Configurations;
 
-public class  UserConfiguation : IEntityTypeConfiguration<User> 
+public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {

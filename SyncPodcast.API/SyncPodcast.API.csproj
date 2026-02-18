@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SyncPodcast.Application\SyncPodcast.Application.csproj" />
-    <ProjectReference Include="..\SyncPoscast.Infrastructure\SyncPoscast.Infrastructure.csproj" />
+    <ProjectReference Include="..\SyncPodcast.Infrastructure\SyncPodcast.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

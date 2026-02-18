@@ -5,14 +5,14 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SyncPodcast.Domain.Entities;
 using SyncPodcast.Domain.Interfaces;
-using SyncPoscast.Infrastructure.Persistence;
+using SyncPodcast.Infrastructure.Persistence;
 
-namespace SyncPoscast.Infrastructure.Respositories;
+namespace SyncPodcast.Infrastructure.Repositories;
 
-public class PoscastRepository : IPodcastRepository
+public class PodcastRepository : IPodcastRepository
 {
     private readonly SyncPodcastDbContext _db;
-    public PoscastRepository(SyncPodcastDbContext db) => _db = db;
+    public PodcastRepository(SyncPodcastDbContext db) => _db = db;
 
     public async Task<Podcast?> GetPodcastByIdAsync(Guid id, CancellationToken ct)
     {

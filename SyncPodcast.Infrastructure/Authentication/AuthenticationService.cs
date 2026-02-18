@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SyncPoscast.Infrastructure.Authentication;
+namespace SyncPodcast.Infrastructure.Authentication;
 
 public class HashService : IHashService
 {

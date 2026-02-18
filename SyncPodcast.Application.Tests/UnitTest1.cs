@@ -1,4 +1,4 @@
-﻿namespace SyncPodcasts.Application.Tests
+﻿namespace SyncPodcast.Application.Tests
 {
     public class UnitTest1
     {

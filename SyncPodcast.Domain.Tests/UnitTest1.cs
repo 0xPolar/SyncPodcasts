@@ -1,4 +1,4 @@
-﻿namespace SyncPoscast.Domain.Tests
+﻿namespace SyncPodcast.Domain.Tests
 {
     public class UnitTest1
     {

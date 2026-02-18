@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SyncPoscast.Infrastructure.Persistence
+namespace SyncPodcast.Infrastructure.Persistence
 {
     public class SyncPodcastDbContext : DbContext 
     {

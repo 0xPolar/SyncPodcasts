@@ -5,9 +5,9 @@ using SyncPodcast.Domain.Entities;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SyncPoscast.Infrastructure.Configurations;
+namespace SyncPodcast.Infrastructure.Configurations;
 
-public class SubscriptionConfiguation : IEntityTypeConfiguration<Subscription>
+public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
 {
     public void Configure(EntityTypeBuilder<Subscription> builder)
     {

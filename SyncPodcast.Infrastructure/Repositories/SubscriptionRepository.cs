@@ -5,9 +5,9 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SyncPodcast.Domain.Entities;
 using SyncPodcast.Domain.Interfaces;
-using SyncPoscast.Infrastructure.Persistence;
+using SyncPodcast.Infrastructure.Persistence;
 
-namespace SyncPoscast.Infrastructure.Respositories;
+namespace SyncPodcast.Infrastructure.Repositories;
 
 
 public class SubscriptionRepository : ISubscriptionRepository
