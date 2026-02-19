@@ -16,6 +16,7 @@ public class LibraryController : ControllerBase
     {
         _mediator = mediator;
     }
+
     // GET: api/v1/library
     [HttpGet("api/v1/library")]
     public async Task<IActionResult> GetLibrary()
