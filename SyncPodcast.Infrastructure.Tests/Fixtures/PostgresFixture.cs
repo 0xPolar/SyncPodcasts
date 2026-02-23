@@ -7,9 +7,9 @@ namespace SyncPodcast.Infrastructure.Tests.Fixtures;
 public class PostgresFixture : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _container = new PostgreSqlBuilder("postgres:17-alpine")
-        .WithDatabase("syncpodcast_test")
-        .WithUsername("postgres")
-        .WithPassword("postgres")
+        //.WithDatabase("syncpodcast_test")
+        //.WithUsername("postgres")
+        //.WithPassword("postgres")
         .Build();
 
     public string ConnectionString => _container.GetConnectionString();
