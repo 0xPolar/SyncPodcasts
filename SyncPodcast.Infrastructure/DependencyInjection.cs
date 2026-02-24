@@ -5,6 +5,7 @@ using SyncPodcast.Domain.Interfaces;
 using SyncPodcast.Infrastructure.Authentication;
 using SyncPodcast.Infrastructure.Persistence;
 using SyncPodcast.Infrastructure.Repositories;
+using SyncPodcast.Infrastructure.Services;
 
 namespace SyncPodcast.Infrastructure;
 
@@ -31,6 +32,11 @@ public static class DependencyInjection
         // Services
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IHashService, HashService>();
+        services.AddScoped<IRssParser, RssParser>();
+        services.AddScoped<IPodcastSearchService, PodcastSearchService>();
+
+        // HttpClient for RSS parsing
+        services.AddHttpClient();
 
         return services;
     }
