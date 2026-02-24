@@ -1,4 +1,5 @@
 ﻿using SyncPodcast.Domain.Entities;
+using SyncPodcast.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -42,7 +43,29 @@ public class  UserTests
     [Fact]
     public void ValidateRefreshToken_WhenTokenMatches_DoesNotThrow()
     {
+        Guid id = Guid.NewGuid();
+        string token = Guid.NewGuid().ToString();
+        DateTime now = DateTime.UtcNow;
 
+        User user = new User(id, "john21", "john@example.com", "hash123", now);
+
+        user.SetRefreshToken(token, now);
+
+        user.ValidateRefreshToken(token);
     }
-    
+
+    [Fact]
+    public void ValidateRefreshToken_WhenTokenMatches_ThrowsDomainException()
+    {
+        Guid id = Guid.NewGuid();
+        string token = Guid.NewGuid().ToString();
+        DateTime now = DateTime.UtcNow;
+
+        User user = new User(id, "john21", "john@example.com", "hash123", now);
+
+        user.SetRefreshToken(token, now);
+
+
+        Assert.Throws<DomainException>(() => user.ValidateRefreshToken("wrong-token"));
+    }
 }
