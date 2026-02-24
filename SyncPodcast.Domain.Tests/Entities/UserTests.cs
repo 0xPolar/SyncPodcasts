@@ -102,7 +102,7 @@ public class  UserTests
     {
         Guid id = Guid.NewGuid();
         string token = Guid.NewGuid().ToString();
-        DateTime now = DateTime.UtcNow.AddDays(-1);
+        DateTime now = DateTime.UtcNow.AddDays(1);
 
         User user = new User(id, "john21", "john@example.com", "hash123", now);
 
@@ -112,6 +112,24 @@ public class  UserTests
 
         Assert.Equal(user.RefreshToken, null);
         Assert.Equal(user.RefreshTokenExpiry, null);
+    }
+
+    [Fact]
+    public void ChangePassword_WithNewHash_UpdatesHashAndClearsRefreshToken()
+    {
+        Guid id = Guid.NewGuid();
+        string token = Guid.NewGuid().ToString();
+        string password = "password";
+        DateTime now = DateTime.UtcNow.AddDays(1);
+
+        User user = new User(id, "john21", "john@example.com", password, now);
+
+        user.SetRefreshToken(token, now);
+
+        user.ChangePassword("new-password");
+
+        Assert.NotEqual(user.RefreshToken, token);
+        Assert.NotEqual(user.RefreshTokenExpiry, now);
     }
 
 }
