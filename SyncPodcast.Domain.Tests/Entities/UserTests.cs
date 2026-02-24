@@ -83,4 +83,17 @@ public class  UserTests
 
         Assert.Throws<DomainException>(() => user.ValidateRefreshToken(token));
     }
+
+    [Fact]
+    public void ValidateRefreshToken_WhenExpiryIsNull_ThrowsDomainException()
+    {
+        Guid id = Guid.NewGuid();
+        string token = Guid.NewGuid().ToString();
+        DateTime now = DateTime.UtcNow.AddDays(-1);
+
+        User user = new User(id, "john21", "john@example.com", "hash123", now);
+
+
+        Assert.Throws<DomainException>(() => user.ValidateRefreshToken(token));
+    }
 }
