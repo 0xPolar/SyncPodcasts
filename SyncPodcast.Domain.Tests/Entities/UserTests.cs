@@ -96,4 +96,22 @@ public class  UserTests
 
         Assert.Throws<DomainException>(() => user.ValidateRefreshToken(token));
     }
+
+    [Fact]
+    public void ClearRefreshToken_AfterSettingToken_SetsFieldsToNull()
+    {
+        Guid id = Guid.NewGuid();
+        string token = Guid.NewGuid().ToString();
+        DateTime now = DateTime.UtcNow.AddDays(-1);
+
+        User user = new User(id, "john21", "john@example.com", "hash123", now);
+
+        user.SetRefreshToken(token, now);
+
+        user.ClearRefreshToken();
+
+        Assert.Equal(user.RefreshToken, null);
+        Assert.Equal(user.RefreshTokenExpiry, null);
+    }
+
 }
