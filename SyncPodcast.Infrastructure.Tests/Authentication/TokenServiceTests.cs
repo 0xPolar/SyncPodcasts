@@ -89,4 +89,11 @@ public class TokenServiceTests
         Assert.Equal(userId, newUserId);
         Assert.True(newToken.ExpiresAt > DateTime.UtcNow);
     }
+
+    [Fact]
+    public void RefreshToken_WithGarbageString_ReturnsNull()
+    {
+        var tokenSet = _tokenService.RefreshToken("not-a-jwt");
+        Assert.Null(tokenSet);
+    }
 }
