@@ -29,4 +29,19 @@ public class PlaybackProgressTests
         Assert.False(progress.IsFinished);
         Assert.Equal(position, progress.Position);
     }
+
+    [Fact]
+    public void UpdatePosition_WhenExactly90Percent_SetsIsFinished()
+    {
+        var progress = new PlaybackProgress(
+            Guid.NewGuid(), Guid.NewGuid(), TimeSpan.Zero, false);
+
+        var duration = TimeSpan.FromMinutes(60);
+        var position = TimeSpan.FromMinutes(54); // 90% — exact threshold
+
+        progress.UpdatePosition(position, duration);
+
+        Assert.True(progress.IsFinished);
+        Assert.Equal(position, progress.Position);
+    }
 }
