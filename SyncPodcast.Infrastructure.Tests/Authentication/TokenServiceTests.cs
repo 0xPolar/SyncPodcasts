@@ -34,4 +34,15 @@ public class TokenServiceTests
         Assert.True(token.RefreshTokenExpiresAt > DateTime.UtcNow);
     }
 
+    [Fact]
+    public void ValidateToken_WithValidToken_ReturnsUserId()
+    {
+        Guid userId = Guid.NewGuid();
+
+        AuthToken token = _tokenService.GenerateToken(userId);
+
+        Guid? tokenUserID = _tokenService.ValidateToken(token.AccessToken);
+
+        Assert.Equal(tokenUserID, userId);
+    }
 }
