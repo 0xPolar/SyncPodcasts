@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SyncPodcast.Infrastructure.Authentication
 {
-    public class JWTSettings 
+    public record JWTSettings 
     {
         public string Secret { get; init; }
         public string Issuer { get; init; }
