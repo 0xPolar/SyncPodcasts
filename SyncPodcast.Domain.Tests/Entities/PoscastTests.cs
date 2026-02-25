@@ -1,6 +1,7 @@
 ﻿using SyncPodcast.Domain.Entities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace SyncPodcast.Domain.Tests.Entities;
@@ -33,7 +34,8 @@ public class PodcastTests
 
         podcast.AddEpisode(episode);
 
-        Assert.Single(podcast.Episodes);
+        int length = podcast.Episodes.Count;
+        Assert.Equal(1, length);
 
     }
 
@@ -50,7 +52,29 @@ public class PodcastTests
         podcast.AddEpisode(episode);
         podcast.AddEpisode(episode);
 
-        Assert.Single(podcast.Episodes);
+        int length = podcast.Episodes.Count;
+        Assert.Equal(1, length);
+    }
+
+    [Fact]
+    public void AddEpisode_WithMultipleUniqueEpisodes_AddsAll()
+    {
+        Podcast podcast = new Podcast(
+            "My Pod", "Author", "Description",
+            new Uri("https://example.com/feed.xml"),
+            new Uri("https://example.com/art.jpg"));
+
+        Episode episode1 = new Episode(podcast.ID, "Episode 1", "Desc", new Uri("https://example.com/ep1.mp3"), TimeSpan.FromMinutes(30), DateTime.UtcNow);
+        Episode episode2 = new Episode(podcast.ID, "Episode 2", "Desc", new Uri("https://example.com/ep2.mp3"), TimeSpan.FromMinutes(45), DateTime.UtcNow);
+        Episode episode3 = new Episode(podcast.ID, "Episode 3", "Desc", new Uri("https://example.com/ep3.mp3"), TimeSpan.FromMinutes(60), DateTime.UtcNow);
+
+
+        podcast.AddEpisode(episode1);
+        podcast.AddEpisode(episode2);
+        podcast.AddEpisode(episode3);
+
+        int length = podcast.Episodes.Count;
+        Assert.Equal(3, length);
     }
 
 }
