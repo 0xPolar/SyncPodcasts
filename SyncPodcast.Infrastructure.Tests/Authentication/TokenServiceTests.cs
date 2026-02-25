@@ -7,17 +7,18 @@ public class TokenServiceTests
 {
     private readonly TokenService _tokenService;
 
+    private readonly JWTSettings _jwtSettings = new JWTSettings
+    {
+        Secret = "this-is-a-test-secret-key-that-is-long-enough-for-hmac-sha256!",
+        Issuer = "test-issuer",
+        Audience = "test-audience",
+        ExpirationMinutes = 15,
+        RefreshTokenExpirationDays = 7
+    };
+
     public TokenServiceTests()
     {
-        var settings = new JWTSettings
-        {
-            Secret = "this-is-a-test-secret-key-that-is-long-enough-for-hmac-sha256!",
-            Issuer = "test-issuer",
-            Audience = "test-audience",
-            ExpirationMinutes = 15,
-            RefreshTokenExpirationDays = 7
-        };
-        _tokenService = new TokenService(settings);
+        _tokenService = new TokenService(_jwtSettings);
 
     }
 
@@ -51,7 +52,23 @@ public class TokenServiceTests
     {
         Guid? tokenUserID = _tokenService.ValidateToken("this-is-not-a-valid-token");
 
-
         Assert.Null(tokenUserID);
+    }
+
+    [Fact]
+    public void ValidateToken_WithWrongSecret_ReturnsNull()
+    {
+        Guid userId = Guid.NewGuid();
+
+        AuthToken token = _tokenService.GenerateToken(userId);
+
+        JWTSettings altJwtSettings = _jwtSettings with { Secret = "" };
+        TokenService altTokenService = new TokenService(altJwtSettings);
+
+        Guid? tokenUserID = altTokenService.ValidateToken(token.AccessToken);
+
+        Assert.NotEqual(tokenUserID, userId);
+
+
     }
 }
