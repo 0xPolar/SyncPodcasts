@@ -17,8 +17,8 @@ public class  UserTests
         User user = new User(id, "john21", "john@example.com", "hash123", now);
 
         Assert.Equal(id, user.ID);
-        Assert.Equal("alice", user.Username);
-        Assert.Equal("alice@test.com", user.Email);
+        Assert.Equal("john21", user.Username);
+        Assert.Equal("john@example.com", user.Email);
         Assert.Equal("hash123", user.PasswordHash);
         Assert.Equal(now, user.CreatedAt);
         Assert.Null(user.RefreshToken);
@@ -45,7 +45,7 @@ public class  UserTests
     {
         Guid id = Guid.NewGuid();
         string token = Guid.NewGuid().ToString();
-        DateTime now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow.AddDays(1);
 
         User user = new User(id, "john21", "john@example.com", "hash123", now);
 
