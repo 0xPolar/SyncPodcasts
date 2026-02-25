@@ -5,6 +5,17 @@ namespace SyncPodcast.Domain.Tests.Entities;
 public class PlaybackProgressTests
 {
     [Fact]
+    public void Constructor_WithValidArgs_SetsAllProperties()
+    {
+        var progress = new PlaybackProgress(
+            Guid.NewGuid(), Guid.NewGuid(), TimeSpan.Zero, false);
+
+        Assert.NotEqual(Guid.Empty, progress.ID);
+        Assert.NotEqual(Guid.Empty, progress.UserID);
+        Assert.Equal(TimeSpan.Zero, progress.Position);
+    }
+
+    [Fact]
     public void UpdatePosition_WhenBelow90Percent_DoesNotSetFinished()
     {
         var progress = new PlaybackProgress(
