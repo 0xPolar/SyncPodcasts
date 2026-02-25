@@ -21,5 +21,20 @@ public class PodcastTests
         Assert.Empty(podcast.Episodes); // starts with no episodes
     }
 
+    [Fact]
+    public void AddEpisode_WithNewEpisode_AddsToCollection()
+    {
+        Podcast podcast = new Podcast(
+            "My Pod", "Author", "Description",
+            new Uri("https://example.com/feed.xml"),
+            new Uri("https://example.com/art.jpg"));
+
+        Episode episode = new Episode(podcast.ID, "Episode 1", "Desc", new Uri("https://example.com/ep1.mp3"), TimeSpan.FromMinutes(30), DateTime.UtcNow);
+
+        podcast.AddEpisode(episode);
+
+        Assert.Single(podcast.Episodes);
+
+    }
 
 }
