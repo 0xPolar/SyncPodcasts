@@ -1,0 +1,25 @@
+﻿using SyncPodcast.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SyncPodcast.Domain.Tests.Entities;
+
+public class PodcastTests
+{
+    [Fact]
+    public void Constructor_WithValidArgs_SetsPropertiesAndGeneratesId()
+    {
+        Podcast podcast = new Podcast(
+            "My Pod", "Author", "Description",
+            new Uri("https://example.com/feed.xml"),
+            new Uri("https://example.com/art.jpg"));
+
+        Assert.NotEqual(Guid.Empty, podcast.ID);
+        Assert.Equal("My Pod", podcast.Title);
+        Assert.Equal("Author", podcast.Author);
+        Assert.Empty(podcast.Episodes); // starts with no episodes
+    }
+
+
+}
