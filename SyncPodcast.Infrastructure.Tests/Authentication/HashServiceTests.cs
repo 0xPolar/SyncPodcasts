@@ -21,7 +21,16 @@ public class HashServiceTests
         bool verify = _hashService.Verify("password123", hash);
 
         Assert.True(verify);
+    }
 
+    [Fact]
+    public void Verify_WithWrongPassword_ReturnsFalse()
+    {
+        var hash = _hashService.Hash("password123");
+
+        bool verify = _hashService.Verify("wrongpassword", hash);
+
+        Assert.False(verify);
     }
 }
 
