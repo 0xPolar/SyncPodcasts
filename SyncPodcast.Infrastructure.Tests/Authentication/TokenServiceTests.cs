@@ -45,4 +45,13 @@ public class TokenServiceTests
 
         Assert.Equal(tokenUserID, userId);
     }
+
+    [Fact]
+    public void ValidateToken_WithGarbageString_ReturnsNull()
+    {
+        Guid? tokenUserID = _tokenService.ValidateToken("this-is-not-a-valid-token");
+
+
+        Assert.Null(tokenUserID);
+    }
 }
