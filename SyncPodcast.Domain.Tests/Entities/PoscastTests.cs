@@ -77,4 +77,20 @@ public class PodcastTests
         Assert.Equal(3, length);
     }
 
+    [Fact]
+    public void UpdateFromFeed_WithNewData_UpdatesAllProperties()
+    {
+        Podcast podcast = new Podcast(
+            "My Pod", "Author", "Description",
+            new Uri("https://example.com/feed.xml"),
+            new Uri("https://example.com/art.jpg"));
+
+        podcast.UpdateFromFeed("New Title", "New Author", "New Description", new Uri("https://example.com/newfeed.xml"), new Uri("https://example.com/newart.jpg"));
+
+        Assert.Equal("New Title", podcast.Title);
+        Assert.Equal("New Author", podcast.Author);
+        Assert.Equal("New Description", podcast.Description);
+
+    }
+
 }
