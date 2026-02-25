@@ -16,7 +16,7 @@ public class HashServiceTests
     [Fact]
     public void Verify_WithCorrectPassword_ReturnsTrue()
     {
-        var hash = _hashService.Hash("password123");
+        string hash = _hashService.Hash("password123");
 
         bool verify = _hashService.Verify("password123", hash);
 
@@ -26,11 +26,20 @@ public class HashServiceTests
     [Fact]
     public void Verify_WithWrongPassword_ReturnsFalse()
     {
-        var hash = _hashService.Hash("password123");
+        string hash = _hashService.Hash("password123");
 
         bool verify = _hashService.Verify("wrongpassword", hash);
 
         Assert.False(verify);
+    }
+
+    [Fact]
+    public void Hash_SameInputTwice_ProducesDifferentHashes()
+    {
+        string hash1 = _hashService.Hash("password123");
+        string hash2 = _hashService.Hash("password123");
+
+        Assert.NotEqual(hash1, hash2);
     }
 }
 
