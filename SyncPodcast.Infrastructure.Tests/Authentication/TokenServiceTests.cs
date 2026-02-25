@@ -71,4 +71,22 @@ public class TokenServiceTests
 
 
     }
+
+    [Fact]
+    public void RefreshToken_WithValidExpiredToken_ReturnsNewTokenAndUserId()
+    {
+        Guid userId = Guid.NewGuid();
+        JWTSettings shortExpirySettings = _jwtSettings with { ExpirationMinutes = -1 };
+
+        TokenService shortExpiryTokenService = new TokenService(shortExpirySettings);
+        var token = shortExpiryTokenService.GenerateToken(userId);
+
+        var tokenSet = _tokenService.RefreshToken(token.AccessToken);
+        Assert.NotNull(tokenSet);
+
+        var (newUserId, newToken) = tokenSet.Value;
+
+        Assert.Equal(userId, newUserId);
+        Assert.True(newToken.ExpiresAt > DateTime.UtcNow);
+    }
 }
