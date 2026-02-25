@@ -37,4 +37,20 @@ public class PodcastTests
 
     }
 
+    [Fact]
+    public void AddEpisode_WithDuplicateId_DoesNotAddSecondTime()
+    {
+        Podcast podcast = new Podcast(
+            "My Pod", "Author", "Description",
+            new Uri("https://example.com/feed.xml"),
+            new Uri("https://example.com/art.jpg"));
+
+        Episode episode = new Episode(podcast.ID, "Episode 1", "Desc", new Uri("https://example.com/ep1.mp3"), TimeSpan.FromMinutes(30), DateTime.UtcNow);
+
+        podcast.AddEpisode(episode);
+        podcast.AddEpisode(episode);
+
+        Assert.Single(podcast.Episodes);
+    }
+
 }
