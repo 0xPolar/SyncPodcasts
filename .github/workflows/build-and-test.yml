@@ -24,6 +24,9 @@ jobs:
   build-and-test:
     name: Build & Test (.NET 10)
     runs-on: ubuntu-latest
+    outputs:
+      line-coverage: ${{ steps.coverage.outputs.line_coverage }}
+      branch-coverage: ${{ steps.coverage.outputs.branch_coverage }}
 
     steps:
       - name: Checkout Repository
@@ -65,6 +68,7 @@ jobs:
           reporttypes: "HtmlInline_AzurePipelines;Cobertura;TextSummary"
 
       - name: Check Coverage Threshold
+        id: coverage
         env:
           THRESHOLD: ${{ vars.COVERAGE_THRESHOLD || '50' }}
         run: |
@@ -73,9 +77,14 @@ jobs:
           echo ""
 
           LINE_COVERAGE=$(grep -oP 'Line coverage: \K[\d.]+' ./coverage-report/Summary.txt || echo "0")
+          BRANCH_COVERAGE=$(grep -oP 'Branch coverage: \K[\d.]+' ./coverage-report/Summary.txt || echo "0")
 
           echo "Line coverage: ${LINE_COVERAGE}%"
+          echo "Branch coverage: ${BRANCH_COVERAGE}%"
           echo "Minimum required: ${THRESHOLD}%"
+
+          echo "line_coverage=${LINE_COVERAGE}" >> "$GITHUB_OUTPUT"
+          echo "branch_coverage=${BRANCH_COVERAGE}" >> "$GITHUB_OUTPUT"
 
           if (( $(echo "$LINE_COVERAGE < $THRESHOLD" | bc -l) )); then
             echo "::error::Code coverage ${LINE_COVERAGE}% is below the ${THRESHOLD}% threshold"
@@ -110,6 +119,9 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
           WORKFLOW_STATUS: ${{ needs.build-and-test.result }}
+          LINE_COVERAGE: ${{ needs.build-and-test.outputs.line-coverage }}
+          BRANCH_COVERAGE: ${{ needs.build-and-test.outputs.branch-coverage }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           if [ "$WORKFLOW_STATUS" = "success" ]; then
             STATUS_EMOJI="✅"
@@ -125,6 +137,13 @@ jobs:
             COLOR=15105570
           fi
 
+          # Build coverage field value
+          if [ -n "$LINE_COVERAGE" ] && [ "$LINE_COVERAGE" != "" ]; then
+            COVERAGE_VALUE="Line: **${LINE_COVERAGE}%** | Branch: **${BRANCH_COVERAGE}%**\n[View Report](${RUN_URL}#artifacts)"
+          else
+            COVERAGE_VALUE="Not available"
+          fi
+
           PAYLOAD=$(cat <<EOF
           {
             "embeds": [{
@@ -134,13 +153,18 @@ jobs:
               "fields": [
                 {
                   "name": "Workflow",
-                  "value": "[${{ github.workflow }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})",
+                  "value": "[${{ github.workflow }}](${RUN_URL})",
                   "inline": true
                 },
                 {
                   "name": "Event",
                   "value": "${{ github.event_name }}",
                   "inline": true
+                },
+                {
+                  "name": "Code Coverage",
+                  "value": "${COVERAGE_VALUE}",
+                  "inline": false
                 }
               ],
               "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
