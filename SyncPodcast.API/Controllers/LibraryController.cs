@@ -18,7 +18,7 @@ public class LibraryController : ControllerBase
     }
 
     // GET: api/v1/library
-    [HttpGet("api/v1/library")]
+    [HttpGet("")]
     public async Task<IActionResult> GetLibrary()
     {
         var userId = User.GetUserId();

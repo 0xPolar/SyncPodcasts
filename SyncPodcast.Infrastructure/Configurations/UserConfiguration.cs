@@ -20,6 +20,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.RefreshToken).HasMaxLength(128);
         builder.Property(u => u.RefreshTokenExpiry);
+
+        builder.HasIndex(u => u.Username).IsUnique();
+        builder.HasIndex(u => u.Email).IsUnique();
     }
     
 }

@@ -6,7 +6,7 @@ using SyncPodcast.API.Extensions;
 
 namespace SyncPodcast.API.Controllers;
 
-public record ChangePasswordRequest(string CurentPassword, string NewPassword);
+public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 
 [ApiController]
 [Route("api/v1/auth")]

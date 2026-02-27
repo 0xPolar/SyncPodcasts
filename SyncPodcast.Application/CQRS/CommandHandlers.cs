@@ -155,7 +155,7 @@ namespace SyncPodcast.Application.CQRS
             await _userRepository.UpdateUserAsync(user, ct);
         }
     }
-    public class SubscribePodcastCommandHandler : IRequestHandler<SubscibePodcastCommand, SubscibeResultDTO>
+    public class SubscribePodcastCommandHandler : IRequestHandler<SubscribePodcastCommand, SubscibeResultDTO>
     {
         private readonly IPodcastRepository _podcasts;
         private readonly ISubscriptionRepository _subscriptions;
@@ -168,7 +168,7 @@ namespace SyncPodcast.Application.CQRS
             _rssParser = rssParser;
         }
 
-        public async Task<SubscibeResultDTO> Handle(SubscibePodcastCommand request, CancellationToken ct)
+        public async Task<SubscibeResultDTO> Handle(SubscribePodcastCommand request, CancellationToken ct)
         {
             Podcast? podcast = await _podcasts.GetByFeedUrlAsync(request.FeedURL, ct);
 

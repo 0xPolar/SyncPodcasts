@@ -50,7 +50,7 @@ namespace SyncPodcast.Application.CQRS
             RuleFor(x => x.NewPassword).NotEmpty().MinimumLength(6).WithMessage("New password must be at least 6 characters long.");
         }
     }
-    public class SubscibePodcastCommandValidator : AbstractValidator<SubscibePodcastCommand>
+    public class SubscibePodcastCommandValidator : AbstractValidator<SubscribePodcastCommand>
     {
         public SubscibePodcastCommandValidator()
         {

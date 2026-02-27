@@ -47,7 +47,7 @@ public class  PodcastController : ControllerBase
     public async Task<IActionResult> Subscribe([FromBody] SubscribeRequest request)
     {
         var userId = User.GetUserId();
-        var result = await _mediator.Send(new SubscibePodcastCommand(userId, request.FeedURL));
+        var result = await _mediator.Send(new SubscribePodcastCommand(userId, request.FeedURL));
         return Ok(result);
     }
 

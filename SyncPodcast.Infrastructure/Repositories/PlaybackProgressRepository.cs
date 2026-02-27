@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens.Experimental;
 using SyncPodcast.Domain.Entities;
 using SyncPodcast.Domain.Interfaces;
 using SyncPodcast.Infrastructure.Persistence;

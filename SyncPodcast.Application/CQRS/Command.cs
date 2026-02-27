@@ -16,7 +16,7 @@ namespace SyncPodcast.Application.CQRS
     public record ChangePasswordCommand(Guid UserId, string CurrentPassword, string NewPassword) : IRequest;
 
     // Podcast Commands
-    public record SubscibePodcastCommand(Guid UserId, Uri FeedURL) : IRequest<SubscibeResultDTO>;
+    public record SubscribePodcastCommand(Guid UserId, Uri FeedURL) : IRequest<SubscibeResultDTO>;
     public record UnsubscribePodcastCommand(Guid UserId, Guid PodcastId) : IRequest;
 
     // Playback Commands
