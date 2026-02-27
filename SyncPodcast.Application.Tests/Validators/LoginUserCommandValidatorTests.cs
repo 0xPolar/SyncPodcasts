@@ -1,4 +1,4 @@
-using FluentValidation.TestHelper;
+using FluentAssertions;
 using SyncPodcast.Application.CQRS;
 
 namespace SyncPodcast.Application.Tests.Validators;
@@ -11,23 +11,25 @@ public class LoginUserCommandValidatorTests
     public void Validate_WithValidCommand_Passes()
     {
         var command = new LoginUserCommand("testuser", "password123");
-        var result = _validator.TestValidate(command);
-        result.ShouldNotHaveAnyValidationErrors();
+        var result = _validator.Validate(command);
+        result.IsValid.Should().BeTrue();
     }
 
     [Fact]
     public void Validate_WithEmptyUsername_Fails()
     {
         var command = new LoginUserCommand("", "password123");
-        var result = _validator.TestValidate(command);
-        result.ShouldHaveValidationErrorFor(x => x.Username);
+        var result = _validator.Validate(command);
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.PropertyName == nameof(command.Username));
     }
 
     [Fact]
     public void Validate_WithEmptyPassword_Fails()
     {
         var command = new LoginUserCommand("testuser", "");
-        var result = _validator.TestValidate(command);
-        result.ShouldHaveValidationErrorFor(x => x.Password);
+        var result = _validator.Validate(command);
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.PropertyName == nameof(command.Password));
     }
 }
