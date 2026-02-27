@@ -59,4 +59,27 @@ public class PlaybackProgressTests
         Assert.True(progress.IsFinished);
         Assert.Equal(position, progress.Position);
     }
+
+    [Fact]
+    public void UpdatePosition_WhenDurationIsZero_DoesNotSetFinished()
+    {
+        var progress = new PlaybackProgress(
+            Guid.NewGuid(), Guid.NewGuid(), TimeSpan.Zero, false);
+
+        progress.UpdatePosition(TimeSpan.FromMinutes(30), TimeSpan.Zero);
+
+        Assert.False(progress.IsFinished);
+    }
+
+    [Fact]
+    public void UpdatePosition_WhenAlreadyFinished_StaysFinished()
+    {
+        var progress = new PlaybackProgress(
+            Guid.NewGuid(), Guid.NewGuid(), TimeSpan.Zero, true);
+
+        // 1 minute out of 60 = 1.6% — well below the 90% threshold
+        progress.UpdatePosition(TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(60));
+
+        Assert.True(progress.IsFinished);
+    }
 }
