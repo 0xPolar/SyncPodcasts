@@ -1,0 +1,154 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - "**"
+    paths-ignore:
+      - "**.md"
+      - "frontends/**"
+
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  SOLUTION_PATH: SyncPodcasts.slnx
+
+jobs:
+  build-and-test:
+    name: Build & Test (.NET 10)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Cache NuGet packages
+        uses: actions/cache@4
+        with:
+          path: ~/.nuget/packages/
+          key: nuget-${{ runner.os }}-${{ hasFiles('**/*.csproj', '**/Directory.Build.props') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore Dependencies
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Build
+        run: dotnet run ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+      - name: Run Tests
+        run: >
+          dotnet test ${{ env.SOLUTION_PATH }}
+          --no-build
+          --configuration Release
+          --logger "trx;LogFileName=test-results.trx"
+          --collect:"XPlat Code Coverage"
+          --results-directory ./test-results
+
+      - name: Generate Coverage Report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        with:
+          reports: ./test-results/**/coverage.cobertura.xml
+          targetdir: ./coverage-report
+          reporttypes: "HtmlInline_AzurePipelines;Cobertura;TextSummary"
+
+      - name: Check Coverage Threshold
+        env:
+          THRESHOLD: ${{ vars.COVERAGE_THRESHOLD || '50' }}
+        run: |
+          echo "=== Coverage Summary ==="
+          cat ./coverage-report/Summary.txt
+          echo ""
+
+          LINE_COVERAGE=$(grep -oP 'Line coverage: \K[\d.]+' ./coverage-report/Summary.txt || echo "0")
+
+          echo "Line coverage: ${LINE_COVERAGE}%"
+          echo "Minimum required: ${THRESHOLD}%"
+
+          if (( $(echo "$LINE_COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "::error::Code coverage ${LINE_COVERAGE}% is below the ${THRESHOLD}% threshold"
+            exit 1
+          else
+            echo "Coverage check passed!"
+          fi
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ./test-results/**/*.trx
+          retention-days: 30
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./coverage-report
+          retention-days: 30
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: always()
+
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          WORKFLOW_STATUS: ${{ needs.build-and-test.result }}
+        run: |
+          if [ "$WORKFLOW_STATUS" = "success" ]; then
+            STATUS_EMOJI="✅"
+            STATUS_TEXT="PASSED"
+            COLOR=3066993
+          elif [ "$WORKFLOW_STATUS" = "failure" ]; then
+            STATUS_EMOJI="❌"
+            STATUS_TEXT="FAILED"
+            COLOR=15158332
+          else
+            STATUS_EMOJI="⚠️"
+            STATUS_TEXT="CANCELLED"
+            COLOR=15105570
+          fi
+
+          PAYLOAD=$(cat <<EOF
+          {
+            "embeds": [{
+              "title": "${STATUS_EMOJI} Build ${STATUS_TEXT}",
+              "description": "**Repository:** ${{ github.repository }}\n**Branch:** ${{ github.ref_name }}\n**Commit:** [\`${GITHUB_SHA:0:7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})\n**Triggered by:** ${{ github.actor }}",
+              "color": ${COLOR},
+              "fields": [
+                {
+                  "name": "Workflow",
+                  "value": "[${{ github.workflow }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})",
+                  "inline": true
+                },
+                {
+                  "name": "Event",
+                  "value": "${{ github.event_name }}",
+                  "inline": true
+                }
+              ],
+              "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            }]
+          }
+          EOF
+          )
+
+          curl -s -H "Content-Type: application/json" \
+               -d "$PAYLOAD" \
+               "$DISCORD_WEBHOOK"
