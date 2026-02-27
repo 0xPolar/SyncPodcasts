@@ -64,7 +64,7 @@ public class  AuthController : ControllerBase
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         var userId = User.GetUserId();
-        await _mediator.Send(new ChangePasswordCommand(userId, request.CurentPassword, request.NewPassword));
+        await _mediator.Send(new ChangePasswordCommand(userId, request.CurrentPassword, request.NewPassword));
         return NoContent();
     }
 
