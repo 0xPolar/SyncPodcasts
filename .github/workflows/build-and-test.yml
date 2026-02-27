@@ -35,10 +35,10 @@ jobs:
           dotnet-version: "10.0.x"
 
       - name: Cache NuGet packages
-        uses: actions/cache@4
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages/
-          key: nuget-${{ runner.os }}-${{ hasFiles('**/*.csproj', '**/Directory.Build.props') }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/Directory.Build.props') }}
           restore-keys: |
             nuget-${{ runner.os }}-
 
@@ -46,7 +46,7 @@ jobs:
         run: dotnet restore ${{ env.SOLUTION_PATH }}
 
       - name: Build
-        run: dotnet run ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+        run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
 
       - name: Run Tests
         run: >
