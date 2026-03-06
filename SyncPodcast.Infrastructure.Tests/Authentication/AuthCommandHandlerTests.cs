@@ -55,4 +55,19 @@ public class LoginUserCommandHandlerTests
         await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should().ThrowAsync<DomainException>();
     }
+
+    [Fact]
+    public async Task Handle_UserNotFound_ThrowsDomainException() 
+    { 
+        User user = EntityFactory.CreateUser(passwordHash: "hashed");
+
+        _userRepo.Setup(r => r.GetByUsernameAsync("testuser", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        LoginUserCommand command = new LoginUserCommand("fakeUser", "password123");
+
+
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should().ThrowAsync<DomainException>();
+    }
 }
