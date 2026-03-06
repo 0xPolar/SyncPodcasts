@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SyncPodcast.Application\SyncPodcast.Application.csproj" />
     <ProjectReference Include="..\SyncPodcast.Domain\SyncPodcast.Domain.csproj" />
+    <ProjectReference Include="..\SyncPodcast.Domain.Tests\SyncPodcast.Domain.Tests.csproj" />
     <ProjectReference Include="..\SyncPodcast.Infrastructure\SyncPodcast.Infrastructure.csproj" />
   </ItemGroup>
 
