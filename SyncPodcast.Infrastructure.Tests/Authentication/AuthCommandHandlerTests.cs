@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using SyncPodcast.Application.CQRS;
 using SyncPodcast.Domain.Entities;
+using SyncPodcast.Domain.Exceptions;
 using SyncPodcast.Domain.Interfaces;
 using SyncPodcast.Domain.Tests.Helpers;
 namespace SyncPodcast.Infrastructure.Tests.Authentication;
@@ -39,5 +40,19 @@ public class LoginUserCommandHandlerTests
         result.Should().NotBeNull();
         result.AccessToken.Should().Be("access");
         _userRepo.Verify(r => r.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_IncorrectPassword_ThrowsDomainException()
+    {
+        User user = EntityFactory.CreateUser(passwordHash: "hashed");
+
+        _userRepo.Setup(r => r.GetByUsernameAsync("testuser", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        LoginUserCommand command = new LoginUserCommand("testuser", "wrongpassword");
+
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should().ThrowAsync<DomainException>();
     }
 }
