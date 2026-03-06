@@ -39,7 +39,7 @@ public class LoginUserCommandHandlerTests
 
         result.Should().NotBeNull();
         result.AccessToken.Should().Be("access");
-        _userRepo.Verify(r => r.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
+        _userRepo.Verify(r => r.UpdateUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once); // makes sure the user's refresh token is updated in the repository
     }
 
     [Fact]
@@ -69,5 +69,39 @@ public class LoginUserCommandHandlerTests
 
         await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
             .Should().ThrowAsync<DomainException>();
+    }
+}
+public class RegisterUserCommandHandlerTests
+{
+    private readonly Mock<IUserRepository> _userRepo = new();
+    private readonly Mock<ITokenService> _tokenService = new();
+    private readonly Mock<IHashService> _hashService = new();
+    private readonly RegisterUserCommandHandler _handler;
+
+    public RegisterUserCommandHandlerTests()
+    {
+        _handler = new RegisterUserCommandHandler(_userRepo.Object, _tokenService.Object, _hashService.Object);
+    }
+
+    [Fact]
+    public async Task Handle_RegisterUser_ReturnsToken()
+    {
+        User user = EntityFactory.CreateUser();
+
+        _userRepo.Setup(r => r.AddAsync(user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+        _tokenService.Setup(t => t.GenerateToken(It.IsAny<Guid>()))
+            .Returns(new AuthToken("access", "refresh",  
+                DateTime.Now.AddHours(1), DateTime.Now.AddDays(7)));
+
+        _hashService.Setup(h => h.Hash("password123")).Returns("hashed");
+
+        RegisterUserCommand command = new RegisterUserCommand("testuser", "testuser@example.com", "hashed-password");
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result.AccessToken.Should().Be("access");
+        _userRepo.Verify(r => r.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);// makes sure the user is added to the repository
     }
 }
