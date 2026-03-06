@@ -104,4 +104,19 @@ public class RegisterUserCommandHandlerTests
         result.AccessToken.Should().Be("access");
         _userRepo.Verify(r => r.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);// makes sure the user is added to the repository
     }
+
+    [Fact]
+    public async Task Handle_ExistingUsername_ThrowsDomainException()
+    {
+        User user = EntityFactory.CreateUser();
+
+        _userRepo.Setup(r => r.GetByUsernameAsync("testuser", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        RegisterUserCommand command = new RegisterUserCommand("testuser", "testuser@example.com", "password123");
+
+        await _handler.Invoking(h => h.Handle(command, CancellationToken.None))
+            .Should().ThrowAsync<DomainException>();
+    }
+
 }
