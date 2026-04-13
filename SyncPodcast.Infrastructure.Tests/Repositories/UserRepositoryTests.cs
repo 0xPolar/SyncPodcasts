@@ -31,7 +31,7 @@ public class UserRepositoryTests : IClassFixture<PostgresFixture>
     {
         await using var context = _fixture.CreateDbContext();
         var repo = new UserRepository(context);
-        var user = EntityFactory.CreateUser(username: $"byname_{Guid.NewGuid():N}", email: $"{Guid.NewGuid():N}@test.com");
+        var user = EntityFactory.CreateUser(username: $"byname_{Guid.NewGuid():N}"[..22], email: $"{Guid.NewGuid():N}@test.com");
         await repo.AddAsync(user, CancellationToken.None);
 
         var fetched = await repo.GetByUsernameAsync(user.Username, CancellationToken.None);
@@ -57,7 +57,7 @@ public class UserRepositoryTests : IClassFixture<PostgresFixture>
         await using var context = _fixture.CreateDbContext();
         var repo = new UserRepository(context);
         var email = $"{Guid.NewGuid():N}@test.com";
-        var user = EntityFactory.CreateUser(username: $"byemail_{Guid.NewGuid():N}", email: email);
+        var user = EntityFactory.CreateUser(username: $"byemail_{Guid.NewGuid():N}"[..22], email: email);
         await repo.AddAsync(user, CancellationToken.None);
 
         var fetched = await repo.GetByEmailAsync(email, CancellationToken.None);
@@ -71,7 +71,7 @@ public class UserRepositoryTests : IClassFixture<PostgresFixture>
     {
         await using var context = _fixture.CreateDbContext();
         var repo = new UserRepository(context);
-        var user = EntityFactory.CreateUser(username: $"upd_{Guid.NewGuid():N}", email: $"{Guid.NewGuid():N}@test.com");
+        var user = EntityFactory.CreateUser(username: $"upd_{Guid.NewGuid():N}"[..22], email: $"{Guid.NewGuid():N}@test.com");
         await repo.AddAsync(user, CancellationToken.None);
 
         user.ChangePassword("new-hashed-password");
@@ -88,7 +88,7 @@ public class UserRepositoryTests : IClassFixture<PostgresFixture>
     {
         await using var context = _fixture.CreateDbContext();
         var repo = new UserRepository(context);
-        var user = EntityFactory.CreateUser(username: $"del_{Guid.NewGuid():N}", email: $"{Guid.NewGuid():N}@test.com");
+        var user = EntityFactory.CreateUser(username: $"del_{Guid.NewGuid():N}"[..22], email: $"{Guid.NewGuid():N}@test.com");
         await repo.AddAsync(user, CancellationToken.None);
 
         await repo.DeleteAsync(user.ID, CancellationToken.None);
