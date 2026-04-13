@@ -60,4 +60,60 @@ public class PodcastRepositoryTests : IClassFixture<PostgresFixture>
 
         fetched.Should().BeNull();
     }
+
+    [Fact]
+    public async Task GetEpisodeByIdAsync_ReturnsEpisode()
+    {
+        await using var context = _fixture.CreateDbContext();
+        var repo = new PodcastRepository(context);
+        var podcast = EntityFactory.CreatePodcast(feedUrl: $"https://example.com/{Guid.NewGuid():N}.xml");
+        var episode = EntityFactory.CreateEpisode(podcastId: podcast.ID, title: "Target Ep");
+        podcast.AddEpisode(episode);
+        await repo.AddAsync(podcast, CancellationToken.None);
+
+        var fetched = await repo.GetEpisodeByIdAsync(episode.ID, CancellationToken.None);
+
+        fetched.Should().NotBeNull();
+        fetched!.Title.Should().Be("Target Ep");
+        fetched.PodcastID.Should().Be(podcast.ID);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ModifiesPodcast()
+    {
+        await using var context = _fixture.CreateDbContext();
+        var repo = new PodcastRepository(context);
+        var podcast = EntityFactory.CreatePodcast(
+            title: "Original",
+            feedUrl: $"https://example.com/{Guid.NewGuid():N}.xml");
+        await repo.AddAsync(podcast, CancellationToken.None);
+
+        podcast.UpdateFromFeed("Updated Title", podcast.Author, podcast.Description, podcast.FeedUrl);
+        await repo.UpdateAsync(podcast, CancellationToken.None);
+
+        await using var verifyContext = _fixture.CreateDbContext();
+        var verifyRepo = new PodcastRepository(verifyContext);
+        var fetched = await verifyRepo.GetPodcastByIdAsync(podcast.ID, CancellationToken.None);
+        fetched!.Title.Should().Be("Updated Title");
+    }
+
+    [Fact]
+    public async Task DeleteAsync_CascadesDeleteToEpisodes()
+    {
+        await using var context = _fixture.CreateDbContext();
+        var repo = new PodcastRepository(context);
+        var podcast = EntityFactory.CreatePodcast(feedUrl: $"https://example.com/{Guid.NewGuid():N}.xml");
+        var episode = EntityFactory.CreateEpisode(podcastId: podcast.ID, title: "To Cascade");
+        podcast.AddEpisode(episode);
+        await repo.AddAsync(podcast, CancellationToken.None);
+
+        await repo.DeleteAsync(podcast.ID, CancellationToken.None);
+
+        await using var verifyContext = _fixture.CreateDbContext();
+        var verifyRepo = new PodcastRepository(verifyContext);
+        var fetchedPodcast = await verifyRepo.GetPodcastByIdAsync(podcast.ID, CancellationToken.None);
+        var fetchedEpisode = await verifyRepo.GetEpisodeByIdAsync(episode.ID, CancellationToken.None);
+        fetchedPodcast.Should().BeNull();
+        fetchedEpisode.Should().BeNull();
+    }
 }
