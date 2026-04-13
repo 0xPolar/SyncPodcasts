@@ -52,4 +52,36 @@ public class PlaybackProgressRepositoryTests : IClassFixture<PostgresFixture>
 
         fetched.Should().BeNull();
     }
+
+    [Fact]
+    public async Task GetByUserIdAsync_ReturnsAllProgressForUser()
+    {
+        await using var context = _fixture.CreateDbContext();
+        var repo = new PlaybackProgressRepository(context);
+        var userId = Guid.NewGuid();
+        var p1 = EntityFactory.CreatePlaybackProgress(userId: userId);
+        var p2 = EntityFactory.CreatePlaybackProgress(userId: userId);
+        await repo.SaveAsync(p1, CancellationToken.None);
+        await repo.SaveAsync(p2, CancellationToken.None);
+
+        var all = await repo.GetByUserIdAsync(userId, CancellationToken.None);
+
+        all.Should().HaveCount(2);
+        all.Should().ContainKey(p1.EpisodeID);
+        all.Should().ContainKey(p2.EpisodeID);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesProgress()
+    {
+        await using var context = _fixture.CreateDbContext();
+        var repo = new PlaybackProgressRepository(context);
+        var progress = EntityFactory.CreatePlaybackProgress();
+        await repo.SaveAsync(progress, CancellationToken.None);
+
+        await repo.DeleteAsync(progress.UserID, progress.EpisodeID, CancellationToken.None);
+
+        var fetched = await repo.GetAsync(progress.UserID, progress.EpisodeID, CancellationToken.None);
+        fetched.Should().BeNull();
+    }
 }
