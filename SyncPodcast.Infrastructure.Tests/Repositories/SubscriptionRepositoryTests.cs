@@ -52,4 +52,29 @@ public class SubscriptionRepositoryTests : IClassFixture<PostgresFixture>
         podcasts.Should().HaveCount(1);
         podcasts[0].ID.Should().Be(podcast.ID);
     }
+
+    [Fact]
+    public async Task GetUserPodcastsAsync_WhenNoSubscriptions_ReturnsEmptyList()
+    {
+        await using var context = _fixture.CreateDbContext();
+        var repo = new SubscriptionRepository(context);
+
+        var podcasts = await repo.GetUserPodcastsAsync(Guid.NewGuid(), CancellationToken.None);
+
+        podcasts.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesSubscription()
+    {
+        await using var context = _fixture.CreateDbContext();
+        var repo = new SubscriptionRepository(context);
+        var subscription = EntityFactory.CreateSubscription();
+        await repo.AddAsync(subscription, CancellationToken.None);
+
+        await repo.DeleteAsync(subscription.UserID, subscription.PodcastID, CancellationToken.None);
+
+        var exists = await repo.ExistsAsync(subscription.UserID, subscription.PodcastID, CancellationToken.None);
+        exists.Should().BeFalse();
+    }
 }
