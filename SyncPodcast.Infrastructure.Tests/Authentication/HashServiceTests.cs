@@ -41,5 +41,14 @@ public class HashServiceTests
 
         Assert.NotEqual(hash1, hash2);
     }
+
+    [Fact]
+    public void Hash_EmptyString_StillProducesHash()
+    {
+        string hash = _hashService.Hash("");
+
+        Assert.NotNull(hash);
+        Assert.NotEmpty(hash);
+    }
 }
 
